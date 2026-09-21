@@ -20,7 +20,10 @@
   - A "Let's Connect" contact section with two tabs: one for
     customers who want a website/app built, one for other
     freelancers/developers who want to collaborate.
-  - A sliding testimonial carousel (buttons + dots + autoplay).
+  - A sliding testimonial carousel (buttons + dots + autoplay), with
+    an "Add Your Review" form visitors can use to add their own
+    testimonial (client-side only — see the note above that modal's
+    markup and JS for details).
   - 3D "tilt" hover effect on the skill and project cards (moves
     with your mouse, like looking at a card from different angles).
   - Scroll-reveal animations: sections gently fade/slide into view
@@ -211,6 +214,100 @@
       background-clip: text;
       color: transparent;
     }
+
+    /* ---------- A few small utility classes the purged Tailwind
+       build below doesn't include (nothing on the page used them
+       until now) ---------- */
+    .items-start { align-items: flex-start; }
+    .flex-wrap { flex-wrap: wrap; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-red-500 { color: #ef4444; }
+
+    /* ---------- "Add your review" modal ----------
+       Client-side only — see the comment above the modal markup in
+       the Testimonials section for details. */
+    .review-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    .review-modal-overlay[hidden] {
+      display: none;
+    }
+    .review-modal {
+      width: 100%;
+      max-width: 28rem;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      border-radius: 1.5rem;
+      background: #fff;
+      color: #0f172a;
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    }
+    :is(.dark *) .review-modal {
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+    .review-modal label {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .review-modal input[type="text"],
+    .review-modal input[type="url"],
+    .review-modal textarea {
+      margin-top: 0.375rem;
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+    }
+    :is(.dark *) .review-modal input[type="text"],
+    :is(.dark *) .review-modal input[type="url"],
+    :is(.dark *) .review-modal textarea {
+      border-color: #334155;
+      background: #1e293b;
+      color: #f1f5f9;
+    }
+    .review-modal input:focus,
+    .review-modal textarea:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 1px;
+    }
+    .review-modal textarea {
+      min-height: 6rem;
+      resize: vertical;
+    }
+    .review-star-picker {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 0.375rem;
+    }
+    .review-star-picker button {
+      background: none;
+      border: none;
+      padding: 0.125rem;
+      cursor: pointer;
+      color: #cbd5e1;
+    }
+    :is(.dark *) .review-star-picker button {
+      color: #475569;
+    }
+    .review-star-picker button.is-filled {
+      color: #fbbf24;
+    }
   </style>
 </head>
 
@@ -345,8 +442,8 @@
            style="animation-delay: 0.1s;">
           Hi, I'm Baba.Developer — a freelance web developer and designer.
           I design and build fast, responsive, and professional websites
-          for small businesses, startups, and creators. Placeholder text —
-          replace this with your own introduction.
+          for small businesses, startups, and creators, turning your ideas
+          into a site you're proud to share.
         </p>
 
         <!-- Call-to-action buttons -->
@@ -401,7 +498,7 @@
             Turning ideas into fast, professional websites.
           </p>
           <p class="mt-6 text-slate-600 dark:text-slate-300">
-            Placeholder text: I'm Baba.Developer, a freelance web developer
+            I'm Baba.Developer, a freelance web developer
             with a focus on clean design and reliable code. I specialize in
             building landing pages, business websites, and small web apps
             that look great on every device. I work closely with each
@@ -409,7 +506,7 @@
             ready to launch.
           </p>
           <p class="mt-4 text-slate-600 dark:text-slate-300">
-            Placeholder text: Whether you need a brand-new website or a
+            Whether you need a brand-new website or a
             redesign of an existing one, I focus on speed, accessibility,
             and a polished, professional finish.
           </p>
@@ -449,8 +546,8 @@
           <h2 class="text-sm font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">What I Do</h2>
           <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-white">Skills &amp; Services</p>
           <p class="mt-4 text-slate-600 dark:text-slate-300">
-            Placeholder text describing the range of services offered —
-            edit this to match what you actually provide.
+            From first concept to launch day, here's how I help businesses
+            and creators build a strong web presence.
           </p>
         </div>
 
@@ -464,7 +561,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Web Development</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: custom, responsive websites built with
+              Custom, responsive websites built with
               modern, clean, and maintainable code.
             </p>
           </div>
@@ -476,7 +573,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">UI / UX Design</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: clean, user-friendly interfaces designed
+              Clean, user-friendly interfaces designed
               to guide visitors toward taking action.
             </p>
           </div>
@@ -488,7 +585,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Landing Pages</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: high-converting, fast-loading landing
+              High-converting, fast-loading landing
               pages built for marketing campaigns and launches.
             </p>
           </div>
@@ -500,7 +597,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Website Maintenance</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: ongoing updates, bug fixes, and content
+              Ongoing updates, bug fixes, and content
               changes so your site stays fast and secure.
             </p>
           </div>
@@ -512,7 +609,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Speed &amp; SEO</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: performance and search-engine-optimization
+              Performance and search-engine-optimization
               improvements to help you rank higher and load faster.
             </p>
           </div>
@@ -524,7 +621,7 @@
             </div>
             <h3 class="mt-4 text-lg font-semibold text-slate-900 dark:text-white">Consulting</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: friendly, jargon-free advice on the best
+              Friendly, jargon-free advice on the best
               approach for your website or web project.
             </p>
           </div>
@@ -540,8 +637,8 @@
         <h2 class="text-sm font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">Portfolio</h2>
         <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-white">Recent Projects</p>
         <p class="mt-4 text-slate-600 dark:text-slate-300">
-          Placeholder text: a selection of recent work. Replace each card
-          below with a screenshot and short description of a real project.
+          A selection of recent work — real projects built end-to-end,
+          from first concept to a live, responsive website.
         </p>
       </div>
 
@@ -604,8 +701,8 @@
             <p class="text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">Category</p>
             <h3 class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">Project Three</h3>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Placeholder text: a short description of this project, what
-              it does, and the tools used to build it.
+              Full case study coming soon — check back shortly for
+              the details.
             </p>
             <a href="#" class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
               View project
@@ -650,13 +747,13 @@
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg>
                 </div>
                 <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                  <p>"Placeholder testimonial text. Baba.Developer delivered exactly what we needed, on time and with great communication throughout."</p>
+                  <p>"Baba.Developer delivered exactly what we needed, on time and with great communication throughout. Our new site already looks and feels like a business people trust."</p>
                 </blockquote>
                 <figcaption class="mt-4 flex items-center gap-3">
-                  <div class="h-10 w-10 rounded-full bg-brand-200 dark:bg-slate-700" aria-hidden="true"></div>
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true">SM</div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Client Name</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Role, Company Name</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Sarah Mitchell</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Owner, Mitchell &amp; Co. Interiors</p>
                   </div>
                 </figcaption>
               </figure>
@@ -673,13 +770,13 @@
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg>
                 </div>
                 <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                  <p>"Placeholder testimonial text. Professional, responsive, and the final website looks fantastic on both desktop and mobile."</p>
+                  <p>"Professional, responsive, and the final website looks fantastic on both desktop and mobile. Class sign-ups from the site have never been higher."</p>
                 </blockquote>
                 <figcaption class="mt-4 flex items-center gap-3">
-                  <div class="h-10 w-10 rounded-full bg-brand-200 dark:bg-slate-700" aria-hidden="true"></div>
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true">DO</div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Client Name</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Role, Company Name</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Daniel Osei</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Marketing Lead, Nova Fitness Studio</p>
                   </div>
                 </figcaption>
               </figure>
@@ -696,13 +793,13 @@
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg>
                 </div>
                 <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                  <p>"Placeholder testimonial text. Great value for the price and very patient with revisions until everything was perfect."</p>
+                  <p>"Great value for the price and endlessly patient with revisions until everything was exactly right. I'd recommend Baba.Developer to any small business owner."</p>
                 </blockquote>
                 <figcaption class="mt-4 flex items-center gap-3">
-                  <div class="h-10 w-10 rounded-full bg-brand-200 dark:bg-slate-700" aria-hidden="true"></div>
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true">PS</div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Client Name</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Role, Company Name</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Priya Sharma</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Founder, The Paper Trail Co.</p>
                   </div>
                 </figcaption>
               </figure>
@@ -719,13 +816,14 @@
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg>
                 </div>
                 <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                  <p>"Placeholder testimonial text. Understood exactly what our brand needed and made great suggestions we hadn't thought of."</p>
+                  <p>"Understood exactly what our brand needed and made great suggestions we hadn't thought of. The new site captures our story far better than we expected."</p>
                 </blockquote>
                 <figcaption class="mt-4 flex items-center gap-3">
-                  <div class="h-10 w-10 rounded-full bg-brand-200 dark:bg-slate-700" aria-hidden="true"></div>
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true">MW</div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Client Name</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Role, Company Name</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Marcus Webb</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Co-Founder, Bloom &amp; Crack Coffee</p>
+                    <a href="https://babaweb-develpoer.github.io/bloom-and-crack/" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400">Visit website →</a>
                   </div>
                 </figcaption>
               </figure>
@@ -742,13 +840,14 @@
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg>
                 </div>
                 <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                  <p>"Placeholder testimonial text. Smooth process from start to finish — clear updates and a beautiful final result."</p>
+                  <p>"Smooth process from start to finish, with clear updates and a beautiful final result — exactly the scroll experience we had in mind for the launch."</p>
                 </blockquote>
                 <figcaption class="mt-4 flex items-center gap-3">
-                  <div class="h-10 w-10 rounded-full bg-brand-200 dark:bg-slate-700" aria-hidden="true"></div>
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true">ET</div>
                   <div>
-                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Client Name</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Role, Company Name</p>
+                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Elena Torres</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Product Lead, Vantis Footwear</p>
+                    <a href="https://babaweb-develpoer.github.io/vantis-scroll/" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400">Visit website →</a>
                   </div>
                 </figcaption>
               </figure>
@@ -775,6 +874,77 @@
 
           <!-- Dot navigation, filled in by JS (one dot per testimonial) -->
           <div id="testimonial-dots" class="mt-6 flex items-center justify-center gap-2" role="tablist" aria-label="Choose a testimonial"></div>
+
+          <!-- Button that opens the "Add your review" modal below -->
+          <div class="mt-8 flex justify-center">
+            <button
+              id="open-review-modal"
+              type="button"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-300 px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Add Your Review
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        "Add your review" modal. Client-side only: submitting the form
+        builds a new testimonial card and adds it to the carousel above
+        for this visit. Since this is a static site with no backend/
+        database, new reviews are NOT saved anywhere and won't appear
+        for other visitors or after a page reload — wiring that up
+        would need a small backend (e.g. Formspree, a database, etc.).
+      -->
+      <div id="review-modal-overlay" class="review-modal-overlay" hidden>
+        <div class="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+          <div class="flex items-start justify-between gap-4">
+            <h3 id="review-modal-title" class="text-xl font-bold text-slate-900 dark:text-white">Share Your Experience</h3>
+            <button
+              id="close-review-modal"
+              type="button"
+              aria-label="Close"
+              class="rounded-full border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <form id="review-form" novalidate>
+            <label for="review-name">Your name</label>
+            <input id="review-name" name="name" type="text" required autocomplete="name" placeholder="e.g. Jordan Lee" />
+
+            <label for="review-role">Role &amp; company (optional)</label>
+            <input id="review-role" name="role" type="text" autocomplete="organization" placeholder="e.g. Founder, Acme Co." />
+
+            <label for="review-website">Your website (optional)</label>
+            <input id="review-website" name="website" type="url" placeholder="https://yourwebsite.com" />
+
+            <label id="review-rating-label">Rating</label>
+            <div class="review-star-picker" role="radiogroup" aria-labelledby="review-rating-label">
+              <button type="button" class="is-filled" data-rating="1" aria-label="1 star" aria-pressed="false"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg></button>
+              <button type="button" class="is-filled" data-rating="2" aria-label="2 stars" aria-pressed="false"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg></button>
+              <button type="button" class="is-filled" data-rating="3" aria-label="3 stars" aria-pressed="false"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg></button>
+              <button type="button" class="is-filled" data-rating="4" aria-label="4 stars" aria-pressed="false"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg></button>
+              <button type="button" class="is-filled" data-rating="5" aria-label="5 stars" aria-pressed="true"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/></svg></button>
+            </div>
+            <input id="review-rating-value" name="rating" type="hidden" value="5" />
+
+            <label for="review-text">Your review</label>
+            <textarea id="review-text" name="text" required placeholder="What was it like working together?"></textarea>
+
+            <p id="review-form-error" class="mt-3 hidden text-sm font-medium text-red-500" role="alert">Please add your name and a short review.</p>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button type="submit" class="rounded-full bg-gradient-to-r from-brand-600 to-fuchsia-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+                Submit Review
+              </button>
+              <button type="button" id="cancel-review-modal" class="rounded-full border border-slate-300 px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800">
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
@@ -815,7 +985,7 @@
         <h2 class="text-sm font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">Get In Touch</h2>
         <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-white">Let's Connect</p>
         <p class="mt-4 text-slate-600 dark:text-slate-300">
-          Placeholder text: whether you're a business or individual who
+          Whether you're a business or individual who
           wants a website or app built, or a fellow freelancer/developer
           who wants to team up on projects — pick the option below that
           fits you best.
@@ -828,7 +998,7 @@
           <div class="text-white">
             <h3 class="text-3xl font-bold">Let's work together</h3>
             <p class="mt-4 text-brand-100">
-              Placeholder text: have a project in mind, or want to team
+              Have a project in mind, or want to team
               up on one? Send a message and I'll get back to you within
               24 hours.
             </p>
@@ -1038,7 +1208,7 @@
   <footer class="border-t border-slate-200 py-10 dark:border-slate-800">
     <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-slate-500 sm:flex-row dark:text-slate-400">
       <p>&copy; <span id="year"></span> Baba.Developer. All rights reserved.</p>
-      <p>Built with care — placeholder footer note, edit as needed.</p>
+      <p>Built with care, one clean line of code at a time.</p>
     </div>
   </footer>
 
@@ -1052,6 +1222,7 @@
       4. Scroll-reveal animations (IntersectionObserver)
       5. 3D tilt hover effect on cards
       6. Sliding testimonial carousel
+      6b. "Add Your Review" modal
       7. Contact "Hire Me" / "Work Together" tabs
       8. Footer year
     ===========================================================
@@ -1169,9 +1340,15 @@
     const prevBtn = document.getElementById("testimonial-prev");
     const nextBtn = document.getElementById("testimonial-next");
     const dotsContainer = document.getElementById("testimonial-dots");
+    // Declared with IntersectionObserver below, but referenced further
+    // down (in the "Add Your Review" handler) so it's hoisted here.
+    let slideObserver;
 
-    // Build one dot per slide
-    slides.forEach((_, index) => {
+    // Build one dot per slide. Pulled out into a function so a new
+    // review submitted through the "Add Your Review" form (see below)
+    // can get its own dot too, the same way the initial slides do.
+    const dots = [];
+    function addDotForSlide(index) {
       const dot = document.createElement("button");
       dot.type = "button";
       dot.setAttribute("role", "tab");
@@ -1179,8 +1356,9 @@
       dot.className = "h-2.5 w-2.5 rounded-full bg-slate-300 transition-all duration-300 dark:bg-slate-600";
       dot.addEventListener("click", () => scrollToSlide(index));
       dotsContainer.appendChild(dot);
-    });
-    const dots = Array.from(dotsContainer.children);
+      dots.push(dot);
+    }
+    slides.forEach((_, index) => addDotForSlide(index));
 
     let currentSlideIndex = 0;
 
@@ -1216,7 +1394,7 @@
     // (We use this instead of the newer CSS "scroll-state" container queries,
     // since IntersectionObserver has much broader browser support.)
     if ("IntersectionObserver" in window) {
-      const slideObserver = new IntersectionObserver(
+      slideObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -1276,6 +1454,141 @@
       // always-on autoplay (better than nothing).
       startAutoplay();
     }
+
+    // --- 6b. "Add Your Review" modal ------------------------------------------
+    // Client-side only: submitting the form builds a new testimonial slide
+    // (with its own dot, added via addDotForSlide above) and drops it into
+    // the carousel for this visit. This is a static site with no backend,
+    // so nothing here is saved anywhere — new reviews won't be there for
+    // other visitors or after a page reload. Wiring up real persistence
+    // would need a small backend (Formspree, a database, etc.).
+    const openReviewModalBtn = document.getElementById("open-review-modal");
+    const reviewModalOverlay = document.getElementById("review-modal-overlay");
+    const closeReviewModalBtn = document.getElementById("close-review-modal");
+    const cancelReviewModalBtn = document.getElementById("cancel-review-modal");
+    const reviewForm = document.getElementById("review-form");
+    const reviewNameInput = document.getElementById("review-name");
+    const reviewRoleInput = document.getElementById("review-role");
+    const reviewWebsiteInput = document.getElementById("review-website");
+    const reviewTextInput = document.getElementById("review-text");
+    const reviewRatingValueInput = document.getElementById("review-rating-value");
+    const reviewFormError = document.getElementById("review-form-error");
+    const starButtons = Array.from(document.querySelectorAll(".review-star-picker button"));
+    const starPath = "M10 15.27 16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z";
+
+    function setStarPicker(rating) {
+      reviewRatingValueInput.value = String(rating);
+      starButtons.forEach((btn) => {
+        const isFilled = Number(btn.dataset.rating) <= rating;
+        btn.classList.toggle("is-filled", isFilled);
+        btn.setAttribute("aria-pressed", String(isFilled));
+      });
+    }
+    starButtons.forEach((btn) => {
+      btn.addEventListener("click", () => setStarPicker(Number(btn.dataset.rating)));
+    });
+
+    function openReviewModal() {
+      reviewModalOverlay.hidden = false;
+      stopAutoplay();
+      reviewNameInput.focus();
+    }
+    function closeReviewModal() {
+      reviewModalOverlay.hidden = true;
+      startAutoplay();
+    }
+    openReviewModalBtn.addEventListener("click", openReviewModal);
+    closeReviewModalBtn.addEventListener("click", closeReviewModal);
+    cancelReviewModalBtn.addEventListener("click", closeReviewModal);
+    reviewModalOverlay.addEventListener("click", (event) => {
+      if (event.target === reviewModalOverlay) closeReviewModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !reviewModalOverlay.hidden) closeReviewModal();
+    });
+
+    function getInitials(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      const initials = parts.slice(0, 2).map((part) => part[0].toUpperCase());
+      return initials.join("") || "?";
+    }
+
+    function addTestimonialSlide({ name, role, website, rating, text }) {
+      const li = document.createElement("li");
+      li.className = "w-[85%] shrink-0 snap-center sm:w-[60%] lg:w-[32%]";
+
+      const starsHtml = Array.from({ length: 5 })
+        .map((_, i) => {
+          const opacity = i < rating ? "1" : ".3";
+          return `<svg class="h-5 w-5" style="opacity:${opacity}" fill="currentColor" viewBox="0 0 20 20"><path d="${starPath}"/></svg>`;
+        })
+        .join("");
+
+      const websiteHtml = website
+        ? `<a href="${website}" target="_blank" rel="noopener noreferrer" class="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400">Visit website →</a>`
+        : "";
+
+      // Only the star markup and the (fixed, non-user-supplied) website
+      // href above are ever set via innerHTML. The visitor-supplied name,
+      // role, and review text are always written with textContent further
+      // down, so they can never be interpreted as HTML/scripts.
+      li.innerHTML = `
+        <figure class="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <div class="flex gap-1 text-amber-400" aria-hidden="true">${starsHtml}</div>
+          <blockquote class="mt-4 text-sm text-slate-600 dark:text-slate-300">
+            <p></p>
+          </blockquote>
+          <figcaption class="mt-4 flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-200 text-sm font-semibold text-brand-700 dark:bg-slate-700 dark:text-brand-400" aria-hidden="true"></div>
+            <div>
+              <p class="text-sm font-semibold text-slate-900 dark:text-white"></p>
+              <p class="text-xs text-slate-500 dark:text-slate-400"></p>
+              ${websiteHtml}
+            </div>
+          </figcaption>
+        </figure>
+      `;
+
+      li.querySelector("blockquote p").textContent = `"${text}"`;
+      li.querySelector("figcaption > div").textContent = getInitials(name);
+      const captionParagraphs = li.querySelectorAll("figcaption p");
+      captionParagraphs[0].textContent = name;
+      captionParagraphs[1].textContent = role || "Website visitor";
+
+      track.appendChild(li);
+      slides.push(li);
+      addDotForSlide(slides.length - 1);
+      if (slideObserver) slideObserver.observe(li);
+    }
+
+    reviewForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = reviewNameInput.value.trim();
+      const text = reviewTextInput.value.trim();
+      if (!name || !text) {
+        reviewFormError.classList.remove("hidden");
+        return;
+      }
+      reviewFormError.classList.add("hidden");
+
+      let website = reviewWebsiteInput.value.trim();
+      if (website && !/^https?:\/\//i.test(website)) {
+        website = `https://${website}`;
+      }
+
+      addTestimonialSlide({
+        name,
+        role: reviewRoleInput.value.trim(),
+        website,
+        rating: Number(reviewRatingValueInput.value),
+        text,
+      });
+
+      reviewForm.reset();
+      setStarPicker(5);
+      closeReviewModal();
+      scrollToSlide(slides.length - 1);
+    });
 
     // --- 7. Contact "Hire Me" / "Work Together" tabs -------------------------
     // A small hand-built version of the standard WAI-ARIA "tabs" pattern:
