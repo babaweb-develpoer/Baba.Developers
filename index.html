@@ -222,11 +222,21 @@
     .flex-wrap { flex-wrap: wrap; }
     .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
     .text-red-500 { color: #ef4444; }
+    /* Used for form error text on the purple contact-card gradient,
+       where the darker red-500 above doesn't have enough contrast. */
+    .text-red-100 { color: #fee2e2; }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
-    /* ---------- "Add your review" modal ----------
-       Client-side only — see the comment above the modal markup in
-       the Testimonials section for details. */
-    .review-modal-overlay {
+    /* ---------- Shared modal dialog (overlay + card) ----------
+       Used by both the "Add Your Review" dialog and the "Message
+       Sent!" popup — see the comments above each one's markup for
+       details. Client-side only; nothing here talks to a server
+       except the Web3Forms submission itself. */
+    .review-modal-overlay,
+    .modal-overlay {
       position: fixed;
       inset: 0;
       z-index: 60;
@@ -237,10 +247,12 @@
       background: rgba(15, 23, 42, 0.6);
       backdrop-filter: blur(4px);
     }
-    .review-modal-overlay[hidden] {
+    .review-modal-overlay[hidden],
+    .modal-overlay[hidden] {
       display: none;
     }
-    .review-modal {
+    .review-modal,
+    .modal-card {
       width: 100%;
       max-width: 28rem;
       max-height: calc(100vh - 3rem);
@@ -251,9 +263,41 @@
       padding: 1.75rem;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
     }
-    :is(.dark *) .review-modal {
+    :is(.dark *) .review-modal,
+    :is(.dark *) .modal-card {
       background: #0f172a;
       color: #f1f5f9;
+    }
+    .modal-card--center {
+      text-align: center;
+    }
+
+    /* ---------- "Message Sent!" popup checkmark ---------- */
+    .thanks-icon-circle {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #4f46e5, #c026d3);
+      animation: thanks-pop 0.4s ease-out both;
+    }
+    .thanks-icon-circle svg {
+      width: 2rem;
+      height: 2rem;
+      color: #fff;
+    }
+    @keyframes thanks-pop {
+      from {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
     .review-modal label {
       display: block;
@@ -959,24 +1003,20 @@
          "tabs" pattern: buttons with role="tab" control panels with
          role="tabpanel", and Left/Right arrow keys move between tabs.
 
-         HOW TO CONNECT THESE FORMS TO YOUR EMAIL
-         (baba.developersio@gmail.com):
-         Right now both forms point to a placeholder address
-         ("YOUR_FORM_ID") so submissions don't go anywhere yet. The
-         easiest zero-backend way to receive them in your inbox:
-           1. Go to https://formspree.io and sign up (it's free) using
-              baba.developersio@gmail.com as the account email.
-           2. Create a new form there — it gives you a form ID, like
-              "abc123".
-           3. In BOTH <form> tags below, replace "YOUR_FORM_ID" in the
-              "action" attribute with your real ID, e.g.:
-                action="https://formspree.io/f/abc123"
-           4. Done — submissions on your live site will be emailed to
-              baba.developersio@gmail.com automatically, no server
-              required.
-         Until that's set up, visitors can still reach you instantly
-         using the "Email Me Directly" link on the left, which opens
-         their own email app already addressed to you.
+         EMAIL DELIVERY (Web3Forms):
+         Both forms below POST to Web3Forms using the access key in the
+         hidden "access_key" input on each <form>. Submissions are
+         emailed straight to the address tied to that key on
+         web3forms.com — no server of your own required. The JS at the
+         bottom (section 7b) submits the form via fetch() so a
+         successful send shows the "Message Sent!" popup instead of
+         navigating away; if JavaScript is unavailable, the <form>'s
+         own action/method still submit it directly to Web3Forms as a
+         normal page POST. Each form also carries a hidden "botcheck"
+         checkbox (Web3Forms' spam honeypot — must stay unchecked).
+         Until a message is sent, visitors can still reach you
+         instantly using the "Email Me Directly" link on the left,
+         which opens their own email app already addressed to you.
          ========================================================= -->
     <section id="contact" class="mx-auto max-w-6xl px-6 py-20">
       <div class="reveal mx-auto max-w-2xl text-center">
@@ -1068,12 +1108,16 @@
               role="tabpanel"
               aria-labelledby="tab-hire"
               class="contact-panel space-y-4"
-              action="https://formspree.io/f/YOUR_FORM_ID"
+              action="https://api.web3forms.com/submit"
               method="POST"
             >
-              <!-- Sets the subject line of the email you receive (Formspree feature) -->
-              <input type="hidden" name="_subject" value="New Project Inquiry — Baba.Developer" />
+              <!-- Web3Forms access key — routes this form's submissions to your email -->
+              <input type="hidden" name="access_key" value="f06f384e-feb6-4468-be55-5531610e90e6" />
+              <!-- Sets the subject line of the email you receive -->
+              <input type="hidden" name="subject" value="New Project Inquiry — Baba.Developer" />
               <input type="hidden" name="inquiry_type" value="Hire Me — Client Project" />
+              <!-- Spam honeypot (Web3Forms convention) — stays unchecked/hidden from real visitors -->
+              <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
 
               <div>
                 <label for="hire-name" class="mb-1 block text-sm font-medium text-white">Name</label>
@@ -1126,6 +1170,7 @@
                   placeholder="Tell me a little about your project..."
                 ></textarea>
               </div>
+              <p class="contact-form-error hidden text-sm font-medium text-red-100" role="alert"></p>
               <button
                 type="submit"
                 class="w-full rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -1140,12 +1185,16 @@
               role="tabpanel"
               aria-labelledby="tab-collab"
               class="contact-panel hidden space-y-4"
-              action="https://formspree.io/f/YOUR_FORM_ID"
+              action="https://api.web3forms.com/submit"
               method="POST"
               hidden
             >
-              <input type="hidden" name="_subject" value="New Collaboration Request — Baba.Developer" />
+              <!-- Web3Forms access key — routes this form's submissions to your email -->
+              <input type="hidden" name="access_key" value="f06f384e-feb6-4468-be55-5531610e90e6" />
+              <input type="hidden" name="subject" value="New Collaboration Request — Baba.Developer" />
               <input type="hidden" name="inquiry_type" value="Work Together — Freelancer Collaboration" />
+              <!-- Spam honeypot (Web3Forms convention) — stays unchecked/hidden from real visitors -->
+              <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" />
 
               <div>
                 <label for="collab-name" class="mb-1 block text-sm font-medium text-white">Name</label>
@@ -1187,6 +1236,7 @@
                   placeholder="What kind of projects are you looking to team up on?"
                 ></textarea>
               </div>
+              <p class="contact-form-error hidden text-sm font-medium text-red-100" role="alert"></p>
               <button
                 type="submit"
                 class="w-full rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -1195,6 +1245,32 @@
               </button>
             </form>
           </div>
+        </div>
+      </div>
+
+      <!--
+        "Message Sent!" popup, shown after a successful Web3Forms
+        submission from either form above (see section 7b in the JS
+        at the bottom). Reuses the same .modal-overlay/.modal-card
+        styling as the "Add Your Review" dialog.
+      -->
+      <div id="thanks-modal-overlay" class="modal-overlay" hidden>
+        <div class="modal-card modal-card--center" role="dialog" aria-modal="true" aria-labelledby="thanks-modal-title">
+          <div class="thanks-icon-circle" aria-hidden="true">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+          </div>
+          <h3 id="thanks-modal-title" class="mt-4 text-2xl font-bold text-slate-900 dark:text-white">Message Sent!</h3>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            Thanks for reaching out — I've received your message and
+            I'll get back to you within 24 hours.
+          </p>
+          <button
+            id="close-thanks-modal"
+            type="button"
+            class="mt-6 rounded-full bg-gradient-to-r from-brand-600 to-fuchsia-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          >
+            Done
+          </button>
         </div>
       </div>
     </section>
@@ -1222,6 +1298,7 @@
       6. Sliding testimonial carousel
       6b. "Add Your Review" modal
       7. Contact "Hire Me" / "Work Together" tabs
+      7b. Contact form submission (Web3Forms) + "Message Sent!" popup
       8. Footer year
     ===========================================================
   -->
@@ -1635,6 +1712,70 @@
 
     // Apply the initial selected/active styling to the default tab (Hire Me)
     selectContactTab(document.getElementById("tab-hire"));
+
+    // --- 7b. Contact form submission (Web3Forms) ------------------------------
+    // Both forms above already point their action/method straight at
+    // Web3Forms (so they'd still work with JS disabled), but here we
+    // intercept the submit and send it via fetch() instead, so a
+    // successful send can show the "Message Sent!" popup below instead
+    // of leaving the page.
+    const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+
+    const thanksModalOverlay = document.getElementById("thanks-modal-overlay");
+    const closeThanksModalBtn = document.getElementById("close-thanks-modal");
+
+    function openThanksModal() {
+      thanksModalOverlay.hidden = false;
+    }
+    function closeThanksModal() {
+      thanksModalOverlay.hidden = true;
+    }
+    closeThanksModalBtn.addEventListener("click", closeThanksModal);
+    thanksModalOverlay.addEventListener("click", (event) => {
+      if (event.target === thanksModalOverlay) closeThanksModal();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !thanksModalOverlay.hidden) closeThanksModal();
+    });
+
+    function wireContactForm(form) {
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const errorEl = form.querySelector(".contact-form-error");
+      const defaultBtnText = submitBtn.textContent;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        errorEl.classList.add("hidden");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+
+        try {
+          const payload = Object.fromEntries(new FormData(form).entries());
+          const response = await fetch(WEB3FORMS_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json();
+          if (result.success) {
+            form.reset();
+            openThanksModal();
+          } else {
+            errorEl.textContent = result.message || "Something went wrong — please try again, or email me directly using the link on the left.";
+            errorEl.classList.remove("hidden");
+          }
+        } catch (error) {
+          errorEl.textContent = "Network error — please try again, or email me directly using the link on the left.";
+          errorEl.classList.remove("hidden");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = defaultBtnText;
+        }
+      });
+    }
+
+    wireContactForm(document.getElementById("panel-hire"));
+    wireContactForm(document.getElementById("panel-collab"));
 
     // --- 8. Auto-update the footer's copyright year ---------------------------
     document.getElementById("year").textContent = new Date().getFullYear();
